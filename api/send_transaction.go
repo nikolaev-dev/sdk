@@ -3,7 +3,7 @@ package api
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/MinterTeam/minter-go-sdk/transaction"
+	"github.com/nikolaev-dev/sdk/transaction"
 )
 
 type SendTransactionResponse struct {

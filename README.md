@@ -1,4 +1,4 @@
-![Minter Logo](https://github.com/MinterTeam/minter-go-sdk/raw/master/minter-logo.svg?sanitize=true)
+![Minter Logo](https://github.com/nikolaev-dev/sdk/raw/master/minter-logo.svg?sanitize=true)
 
 [![go.dev reference](https://img.shields.io/badge/go.dev-reference-007d9c?logo=go&logoColor=white&style=flat-square)](https://pkg.go.dev/mod/github.com/MinterTeam/minter-go-sdk)
 
@@ -67,7 +67,7 @@ You can get all valid responses and full documentation at [Minter Node Api](http
 Create MinterAPI instance
 
 ```go
-import "github.com/MinterTeam/minter-go-sdk/api"
+import "github.com/nikolaev-dev/sdk/api"
 
 nodeUrl := "https://minter-node-1.testnet.minter.network:8841"
 minterClient := api.NewApi(nodeUrl)
@@ -753,7 +753,7 @@ proof, _ := check.Proof()
 ### Minter Wallet
 
 ```go
-import "github.com/MinterTeam/minter-go-sdk/wallet"
+import "github.com/nikolaev-dev/sdk/wallet"
 ```
 
 * Create wallet. This method returns generated seed, private key, public key, mnemonic and Minter address.

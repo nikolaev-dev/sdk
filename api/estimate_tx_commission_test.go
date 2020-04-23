@@ -3,8 +3,8 @@
 package api
 
 import (
-	"github.com/MinterTeam/minter-go-sdk/transaction"
-	"github.com/MinterTeam/minter-go-sdk/wallet"
+	"github.com/nikolaev-dev/sdk/transaction"
+	"github.com/nikolaev-dev/sdk/wallet"
 	"math/big"
 	"testing"
 )

@@ -1,7 +1,7 @@
 package transaction
 
 import (
-	"github.com/MinterTeam/minter-go-sdk/wallet"
+	"github.com/nikolaev-dev/sdk/wallet"
 	"github.com/ethereum/go-ethereum/rlp"
 	"math/big"
 )

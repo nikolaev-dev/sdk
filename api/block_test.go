@@ -3,7 +3,7 @@
 package api
 
 import (
-	"github.com/MinterTeam/minter-go-sdk/transaction"
+	"github.com/nikolaev-dev/sdk/transaction"
 	"strconv"
 	"testing"
 )
