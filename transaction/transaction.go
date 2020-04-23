@@ -150,8 +150,6 @@ func (o *object) Signature() (signatureInterface, error) {
 	switch o.SignatureType {
 	case SignatureTypeSingle:
 		signature = &Signature{}
-	case SignatureTypeMulti:
-		signature = &SignatureMulti{}
 	default:
 		return nil, errors.New("not set signature type")
 	}
@@ -168,38 +166,6 @@ func (o *object) Signature() (signatureInterface, error) {
 	return signature, nil
 }
 
-// Decode transaction
-func Decode(tx string) (SignedTransaction, error) {
-	decodeString, err := hex.DecodeString(tx[2:])
-	if err != nil {
-		return nil, err
-	}
-
-	transaction := new(Transaction)
-	err = rlp.DecodeBytes(decodeString, transaction)
-	if err != nil {
-		return nil, err
-	}
-
-	var data interface{}
-	switch transaction.Type {
-	case TypeSend:
-		data = &SendData{}
-	default:
-		return nil, errors.New("unknown transaction type")
-	}
-
-	err = rlp.DecodeBytes(transaction.Data, data)
-	if err != nil {
-		return nil, err
-	}
-
-	result := &object{
-		Transaction: transaction,
-		data:        data.(DataInterface),
-	}
-	return result, nil
-}
 
 type Transaction struct {
 	Nonce         uint64
@@ -231,15 +197,6 @@ func (s *Signature) encode() ([]byte, error) {
 
 func (s *Signature) firstSig() ([]byte, error) {
 	return s.encode()
-}
-
-func decodeSignature(b []byte) (*Signature, error) {
-	s := &Signature{}
-	err := rlp.DecodeBytes(b, s)
-	if err != nil {
-		return nil, err
-	}
-	return s, err
 }
 
 func (s *Signature) toBytes() []byte {
@@ -343,54 +300,15 @@ func (o *object) Hash() (string, error) {
 }
 
 func (o *object) addSignature(signatures ...*Signature) (SignedTransaction, error) {
-	signature, err := o.Signature()
-	if err != nil {
-		return nil, err
-	}
 	if len(signatures) == 0 {
 		return nil, errors.New("number of signatures must be greater than 0")
 	}
 	if o.SignatureType == SignatureTypeSingle {
 		return o.setSignature(signatures[0])
 	}
-	if len(o.SignatureData()) == 0 {
-		return nil, errors.New("multisig address not set")
-	}
-	signatureMulti := signature.(*SignatureMulti)
-	signatureMulti.Signatures = append(signatureMulti.Signatures, signatures...)
-	return o.setSignature(signatureMulti)
+	return nil, errors.New("multisig address not set")
 }
 
-func (o *object) AddSignature(signatures ...[]byte) (SignedTransaction, error) {
-	signature, err := o.Signature()
-	if err != nil {
-		return nil, err
-	}
-	if len(signatures) == 0 {
-		return nil, errors.New("number of signatures must be greater than 0")
-	}
-	if o.SignatureType == SignatureTypeSingle {
-		sig, err := decodeSignature(signatures[0])
-		if err != nil {
-			return nil, err
-		}
-		return o.setSignature(sig)
-	}
-	if len(o.SignatureData()) == 0 {
-		return nil, errors.New("multisig address not set")
-	}
-	signatureMulti := signature.(*SignatureMulti)
-	signs := make([]*Signature, 0, len(signatures))
-	for _, signature := range signatures {
-		sig, err := decodeSignature(signature)
-		if err != nil {
-			return nil, err
-		}
-		signs = append(signs, sig)
-	}
-	signatureMulti.Signatures = append(signatureMulti.Signatures, signs...)
-	return o.setSignature(signatureMulti)
-}
 
 // sign transaction
 func (o *object) Sign(key string, multisigPrKeys ...string) (SignedTransaction, error) {
@@ -416,41 +334,6 @@ func (o *object) Sign(key string, multisigPrKeys ...string) (SignedTransaction, 
 			return nil, err
 		}
 		return o.addSignature(signature)
-	case SignatureTypeMulti:
-		if len(o.SignatureData()) == 0 {
-			sig := &SignatureMulti{
-				Multisig:   [20]byte{},
-				Signatures: make([]*Signature, 0, len(multisigPrKeys)),
-			}
-			addressToHex, err := wallet.AddressToHex(key)
-			if err != nil {
-				return nil, err
-			}
-			copy(sig.Multisig[:], addressToHex)
-			_, err = o.setSignature(sig)
-			if err != nil {
-				return nil, err
-			}
-		}
-		_, err := o.Signature()
-		if err != nil {
-			return nil, err
-		}
-
-		if len(multisigPrKeys) == 0 {
-			return o, nil
-		}
-		signatures := make([]*Signature, 0, len(multisigPrKeys))
-		for _, prKey := range multisigPrKeys {
-			signature, err := signature(prKey, h)
-			if err != nil {
-				return nil, err
-			}
-
-			signatures = append(signatures, signature)
-		}
-
-		return o.addSignature(signatures...)
 	default:
 		return nil, fmt.Errorf("undefined signature type: %d", o.SignatureType)
 	}
