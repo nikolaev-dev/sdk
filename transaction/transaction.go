@@ -93,7 +93,6 @@ type SignedTransaction interface {
 	Hash() (string, error)
 	Data() DataInterface
 	Signature() (signatureInterface, error)
-	AddSignature(signatures ...[]byte) (SignedTransaction, error)
 	SignatureData() []byte
 	SimpleSignatureData() ([]byte, error)
 	Sign(prKey string, multisigPrKeys ...string) (SignedTransaction, error)
