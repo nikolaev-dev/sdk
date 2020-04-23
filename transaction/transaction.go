@@ -96,7 +96,6 @@ type SignedTransaction interface {
 	AddSignature(signatures ...[]byte) (SignedTransaction, error)
 	SignatureData() []byte
 	SimpleSignatureData() ([]byte, error)
-	SenderAddress() (string, error)
 	Sign(prKey string, multisigPrKeys ...string) (SignedTransaction, error)
 }
 
