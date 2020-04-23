@@ -17,19 +17,6 @@ type Type byte
 
 const (
 	TypeSend Type = iota + 1
-	TypeSellCoin
-	TypeSellAllCoin
-	TypeBuyCoin
-	TypeCreateCoin
-	TypeDeclareCandidacy
-	TypeDelegate
-	TypeUnbond
-	TypeRedeemCheck
-	TypeSetCandidateOnline
-	TypeSetCandidateOffline
-	TypeCreateMultisig
-	TypeMultisend
-	TypeEditCandidate
 )
 
 type fee uint
