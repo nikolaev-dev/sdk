@@ -71,32 +71,6 @@ func (t *TransactionResult) DataStruct() (tdi, error) {
 	switch transaction.Type(t.Type) {
 	case transaction.TypeSend:
 		data = &SendData{}
-	case transaction.TypeSellCoin:
-		data = &SellCoinData{}
-	case transaction.TypeSellAllCoin:
-		data = &SellAllCoinData{}
-	case transaction.TypeBuyCoin:
-		data = &BuyCoinData{}
-	case transaction.TypeCreateCoin:
-		data = &CreateCoinData{}
-	case transaction.TypeDeclareCandidacy:
-		data = &DeclareCandidacyData{}
-	case transaction.TypeDelegate:
-		data = &DelegateData{}
-	case transaction.TypeUnbond:
-		data = &UnbondData{}
-	case transaction.TypeRedeemCheck:
-		data = &RedeemCheckData{}
-	case transaction.TypeSetCandidateOnline:
-		data = &SetCandidateOnData{}
-	case transaction.TypeSetCandidateOffline:
-		data = &SetCandidateOffData{}
-	case transaction.TypeCreateMultisig:
-		data = &CreateMultisigData{}
-	case transaction.TypeMultisend:
-		data = &MultisendData{}
-	case transaction.TypeEditCandidate:
-		data = &EditCandidateData{}
 	default:
 		return nil, errors.New("unknown transaction type")
 	}
