@@ -202,50 +202,6 @@ func Decode(tx string) (SignedTransaction, error) {
 	return result, nil
 }
 
-// Get sender address
-func (o *object) SenderAddress() (string, error) {
-	if o.SignatureType == SignatureTypeSingle {
-		hash, err := rlpHash([]interface{}{
-			o.Transaction.Nonce,
-			o.Transaction.ChainID,
-			o.Transaction.GasPrice,
-			o.Transaction.GasCoin,
-			o.Transaction.Type,
-			o.Transaction.Data,
-			o.Transaction.Payload,
-			o.Transaction.ServiceData,
-			o.Transaction.SignatureType,
-		})
-		if err != nil {
-			return "", err
-		}
-
-		signature, err := o.Signature()
-		if err != nil {
-			return "", err
-		}
-
-		ecrecover, err := crypto.Ecrecover(hash[:], signature.(*Signature).toBytes())
-		if err != nil {
-			return "", err
-		}
-
-		address, err := wallet.AddressByPublicKey(hex.EncodeToString(ecrecover))
-		if err != nil {
-			return "", err
-		}
-
-		return address, nil
-	}
-
-	signature, err := o.Signature()
-	if err != nil {
-		return "", err
-	}
-
-	return wallet.BytesToAddress(signature.(*SignatureMulti).Multisig), nil
-}
-
 type Transaction struct {
 	Nonce         uint64
 	ChainID       ChainID
