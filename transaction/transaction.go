@@ -36,19 +36,6 @@ type fee uint
 
 const (
 	feeTypeSend                fee = 10
-	feeTypeSellCoin            fee = 100
-	feeTypeSellAllCoin         fee = 100
-	feeTypeBuyCoin             fee = 100
-	feeTypeCreateCoin          fee = 1000
-	feeTypeDeclareCandidacy    fee = 10000
-	feeTypeDelegate            fee = 200
-	feeTypeUnbond              fee = 200
-	feeTypeRedeemCheck         fee = 30
-	feeTypeSetCandidateOnline  fee = 100
-	feeTypeSetCandidateOffline fee = 100
-	feeTypeCreateMultisig      fee = 100
-	// feeMultisend fee =  10+(n-1)*5
-	feeTypeEditCandidate fee = 100000
 )
 
 type SignatureType byte
@@ -63,7 +50,6 @@ type ChainID byte
 
 const (
 	_ ChainID = iota
-	MainNetChainID
 	TestNetChainID
 )
 
@@ -95,33 +81,6 @@ func (b *Builder) NewTransaction(data DataInterface) (Interface, error) {
 	switch data.(type) {
 	case *SendData:
 		return object.setType(TypeSend), nil
-	case *SellCoinData:
-		return object.setType(TypeSellCoin), nil
-	case *SellAllCoinData:
-		return object.setType(TypeSellAllCoin), nil
-	case *BuyCoinData:
-		return object.setType(TypeBuyCoin), nil
-	case *CreateCoinData:
-		return object.setType(TypeCreateCoin), nil
-	case *DeclareCandidacyData:
-		return object.setType(TypeDeclareCandidacy), nil
-	case *DelegateData:
-		return object.setType(TypeDelegate), nil
-	case *UnbondData:
-		return object.setType(TypeUnbond), nil
-	case *RedeemCheckData:
-		return object.setType(TypeRedeemCheck), nil
-	case *SetCandidateOnData:
-		return object.setType(TypeSetCandidateOnline), nil
-	case *SetCandidateOffData:
-		return object.setType(TypeSetCandidateOffline), nil
-	case *CreateMultisigData:
-		return object.setType(TypeCreateMultisig), nil
-	case *MultisendData:
-		return object.setType(TypeMultisend), nil
-	case *EditCandidateData:
-		return object.setType(TypeEditCandidate), nil
-
 	default:
 		return nil, errors.New("unknown transaction type")
 	}
@@ -240,32 +199,6 @@ func Decode(tx string) (SignedTransaction, error) {
 	switch transaction.Type {
 	case TypeSend:
 		data = &SendData{}
-	case TypeSellCoin:
-		data = &SellCoinData{}
-	case TypeSellAllCoin:
-		data = &SellAllCoinData{}
-	case TypeBuyCoin:
-		data = &BuyCoinData{}
-	case TypeCreateCoin:
-		data = &CreateCoinData{}
-	case TypeDeclareCandidacy:
-		data = &DeclareCandidacyData{}
-	case TypeDelegate:
-		data = &DelegateData{}
-	case TypeUnbond:
-		data = &UnbondData{}
-	case TypeRedeemCheck:
-		data = &RedeemCheckData{}
-	case TypeSetCandidateOnline:
-		data = &SetCandidateOnData{}
-	case TypeSetCandidateOffline:
-		data = &SetCandidateOffData{}
-	case TypeCreateMultisig:
-		data = &CreateMultisigData{}
-	case TypeMultisend:
-		data = &MultisendData{}
-	case TypeEditCandidate:
-		data = &EditCandidateData{}
 	default:
 		return nil, errors.New("unknown transaction type")
 	}
