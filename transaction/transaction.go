@@ -146,22 +146,7 @@ func (o *object) SimpleSignatureData() ([]byte, error) {
 
 func (o *object) Signature() (signatureInterface, error) {
 	var signature signatureInterface
-	switch o.SignatureType {
-	case SignatureTypeSingle:
-		signature = &Signature{}
-	default:
-		return nil, errors.New("not set signature type")
-	}
-
-	if len(o.SignatureData()) == 0 {
-		return signature, nil
-	}
-
-	err := rlp.DecodeBytes(o.SignatureData(), signature)
-	if err != nil {
-		return nil, err
-	}
-
+	signature = &Signature{}
 	return signature, nil
 }
 
@@ -207,22 +192,6 @@ func (s *Signature) toBytes() []byte {
 	return sig
 }
 
-type SignatureMulti struct {
-	Multisig   [20]byte
-	Signatures []*Signature
-}
-
-func (s *SignatureMulti) encode() ([]byte, error) {
-	return rlp.EncodeToBytes(s)
-}
-
-func (s *SignatureMulti) firstSig() ([]byte, error) {
-	if len(s.Signatures) == 0 {
-		return nil, errors.New("signature not set")
-	}
-	return s.Signatures[0].encode()
-}
-
 func (o *object) setType(t Type) Interface {
 	o.Type = t
 	return o
@@ -230,11 +199,6 @@ func (o *object) setType(t Type) Interface {
 
 func (o *object) SetSignatureType(signatureType SignatureType) Interface {
 	o.SignatureType = signatureType
-	return o
-}
-
-func (o *object) SetMultiSignatureType() Interface {
-	o.SignatureType = SignatureTypeMulti
 	return o
 }
 
