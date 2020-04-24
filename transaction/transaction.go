@@ -5,10 +5,9 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"errors"
-	"fmt"
-	"github.com/nikolaev-dev/sdk/wallet"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/rlp"
+	"github.com/nikolaev-dev/sdk/wallet"
 	"golang.org/x/crypto/sha3"
 	"math/big"
 )
@@ -80,8 +79,6 @@ type SignedTransaction interface {
 	EncodeInterface
 	Fee() *big.Int
 	Hash() (string, error)
-	SignatureData() []byte
-	SimpleSignatureData() ([]byte, error)
 	Sign(prKey string, multisigPrKeys ...string) (SignedTransaction, error)
 }
 
@@ -94,7 +91,6 @@ type Interface interface {
 	SetGasCoin(name string) Interface
 	SetGasPrice(price uint8) Interface
 	SetPayload(payload []byte) Interface
-	SetServiceData(serviceData []byte) Interface
 	Sign(prKey string, multisigPrKeys ...string) (SignedTransaction, error)
 }
 
@@ -191,11 +187,6 @@ func (o *object) SetPayload(payload []byte) Interface {
 	return o
 }
 
-func (o *object) SetServiceData(serviceData []byte) Interface {
-	o.ServiceData = serviceData
-	return o
-}
-
 func (tx *Transaction) Encode() (string, error) {
 	src, err := rlp.EncodeToBytes(tx)
 	if err != nil {
@@ -249,16 +240,11 @@ func (o *object) Sign(key string, multisigPrKeys ...string) (SignedTransaction, 
 		return nil, err
 	}
 
-	switch o.SignatureType {
-	case SignatureTypeSingle:
-		signature, err := signature(key, h)
-		if err != nil {
-			return nil, err
-		}
-		return o.addSignature(signature)
-	default:
-		return nil, fmt.Errorf("undefined signature type: %d", o.SignatureType)
+	signature, err := signature(key, h)
+	if err != nil {
+		return nil, err
 	}
+	return o.addSignature(signature)
 }
 
 func signature(prKey string, h [32]byte) (*Signature, error) {
