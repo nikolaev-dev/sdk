@@ -21,16 +21,12 @@ const (
 
 type fee uint
 
-const (
-	feeTypeSend                fee = 10
-)
 
 type SignatureType byte
 
 const (
 	_ SignatureType = iota
 	SignatureTypeSingle
-	SignatureTypeMulti
 )
 
 type ChainID byte
@@ -64,13 +60,7 @@ func (b *Builder) NewTransaction(data DataInterface) (Interface, error) {
 		Transaction: transaction,
 		data:        data,
 	}
-
-	switch data.(type) {
-	case *SendData:
-		return object.setType(TypeSend), nil
-	default:
-		return nil, errors.New("unknown transaction type")
-	}
+	return object.setType(TypeSend), nil
 }
 
 type DataInterface interface {
@@ -88,11 +78,8 @@ type EncodeInterface interface {
 
 type SignedTransaction interface {
 	EncodeInterface
-	GetTransaction() *Transaction
 	Fee() *big.Int
 	Hash() (string, error)
-	Data() DataInterface
-	Signature() (signatureInterface, error)
 	SignatureData() []byte
 	SimpleSignatureData() ([]byte, error)
 	Sign(prKey string, multisigPrKeys ...string) (SignedTransaction, error)
@@ -118,37 +105,10 @@ type object struct {
 
 // Get fee of transaction in PIP
 func (o *object) Fee() *big.Int {
-	gasPrice := big.NewInt(0).Mul(big.NewInt(int64(o.data.fee())), big.NewInt(1000000000000000))
+	gasPrice := big.NewInt(0).Mul(big.NewInt(int64(10)), big.NewInt(1000000000000000))
 	commission := big.NewInt(0).Add(big.NewInt(0).Mul(big.NewInt(int64(len(o.Payload))*2), big.NewInt(1000000000000000)), big.NewInt(0).Mul(big.NewInt(int64(len(o.ServiceData))*2), big.NewInt(1000000000000000)))
 	return big.NewInt(0).Add(gasPrice, commission)
 }
-
-func (o *object) Data() DataInterface {
-	return o.data
-}
-
-func (o *object) GetTransaction() *Transaction {
-	return o.Transaction
-}
-
-func (o *object) SignatureData() []byte {
-	return o.Transaction.SignatureData
-}
-
-func (o *object) SimpleSignatureData() ([]byte, error) {
-	s, err := o.Signature()
-	if err != nil {
-		return nil, err
-	}
-	return s.firstSig()
-}
-
-func (o *object) Signature() (signatureInterface, error) {
-	var signature signatureInterface
-	signature = &Signature{}
-	return signature, nil
-}
-
 
 type Transaction struct {
 	Nonce         uint64
@@ -376,8 +336,4 @@ func (d *SendData) SetValue(value *big.Int) *SendData {
 
 func (d *SendData) encode() ([]byte, error) {
 	return rlp.EncodeToBytes(d)
-}
-
-func (d *SendData) fee() fee {
-	return feeTypeSend
 }
