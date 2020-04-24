@@ -102,7 +102,6 @@ type Interface interface {
 	EncodeInterface
 	setType(t Type) Interface
 	SetSignatureType(signatureType SignatureType) Interface
-	SetMultiSignatureType() Interface
 	setSignature(signature signatureInterface) (SignedTransaction, error)
 	SetNonce(nonce uint64) Interface
 	SetGasCoin(name string) Interface
